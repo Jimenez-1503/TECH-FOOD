@@ -1,11 +1,15 @@
 const app = require('./app');
 const pool = require('./config/database');
+const cors = require('cors')
+
+
 
 const PORT = process.env.PORT || 3000;
 
 // Testando conexão de forma assíncrona com Promises e iniciando o servidor
 async function startServer() {
     try {
+        app.use(cors())
         const connection = await pool.getConnection();
         console.log("Conexão com MySQL estabelecida! ✔️");
         connection.release();
