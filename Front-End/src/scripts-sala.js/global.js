@@ -7,11 +7,46 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function solicitarNomeCliente() {
+  if(sessionStorage.getItem("techfood_cliente")) return;
 
+  const modal = document.querySelector("#modal-boas-vindas");
+  if (modal) modal.style.display = "flex";
+
+  const btnConfirmar = document.querySelector("#btn-confirmar-nome");
+  const inputNome = document.querySelector("#input-nome-cliente");
+
+  if (!btnConfirmar || !inputNome) return;
+
+  btnConfirmar.addEventListener("click", function(){
+    const nome = inputNome.value.trim()
+
+    // alertar para não deixar incompleto
+    if(!nome){
+      inputNome.focus()
+      return;
+    }
+  })
+
+    // salvar o nome
+    sessionStorage.setItem("techfood_cliente", nome);
+    modal.style.display = "none";
+
+    exibirNomeCliente();
+
+    inputNome.addEventListener("keydown", function (e) { //é disparado no exato momento em que uma tecla é pressionada no teclado
+      if (e.key === "Enter") btnConfirmar.click();
+  });
+
+  setTimeout(function () {
+    inputNome.focus();
+  }, 100);
+  
 }
 
 function exibirNomeCliente() {
-  
+
+
+
 }
 
 function exibirBoasVindas() {
