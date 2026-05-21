@@ -1,33 +1,8 @@
-/* ==========================================================
-   PEDIDOS.JS — Lógica da página de Pedidos (pedidos.html)
-
-   ROADMAP DESTE ARQUIVO:
-   [✔] Aula 8  — Criado: adicionarItemAoResumo() e o botão Limpar
-                 migraram do aula7.js para cá e evoluíram.
-                 Em vez de criar itens na mesma página do cardápio,
-                 agora lemos do localStorage e exibimos em pedidos.html.
-   [ ] Futuro  — Substituir localStorage por chamadas à API (back-end)
-   ========================================================== */
-
 document.addEventListener("DOMContentLoaded", function () {
   renderizarPedidos();
   configurarLimparPedidos();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// renderizarPedidos()
-// Aula 7: adicionarItemAoResumo() criava um <li> por clique na mesma
-//   página do cardápio — createElement + appendChild em tempo real.
-//
-// Aula 8: migrou para cá e evoluiu. Agora lemos TODOS os pedidos
-//   do localStorage de uma vez ao abrir pedidos.html e montamos
-//   a lista completa. O mesmo createElement + appendChild da Aula 7
-//   continua aqui — mesma técnica, contexto diferente.
-//
-// reduce(): percorre o array acumulando um resultado.
-//   Aqui soma as quantidades de todos os pedidos para o contador.
-//   Funciona como um forEach, mas devolve um único valor ao final.
-// ─────────────────────────────────────────────────────────────────────────────
 function renderizarPedidos() {
   const lista = document.querySelector("#lista-pedidos");
   const spanTotal = document.querySelector("#valor-total");
@@ -100,21 +75,6 @@ function renderizarPedidos() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// configurarLimparPedidos()
-// Aula 7: o botão Limpar estava como código SOLTO no aula7.js —
-//   usava um loop firstElementChild + remove() para esvaziar a lista
-//   na mesma página.
-//
-// Aula 8: virou função, migrou para cá e evoluiu.
-//   Em vez de remover elementos do DOM um por um, removemos a chave
-//   do localStorage e re-renderizamos — mais simples e correto
-//   para o novo contexto de página dedicada.
-//
-//   removeItem("chave") é mais preciso que clear():
-//   remove só os pedidos, sem apagar pratos cadastrados
-//   ou qualquer outra chave futura do projeto.
-// ─────────────────────────────────────────────────────────────────────────────
 function configurarLimparPedidos() {
   const btn = document.querySelector("#btn-limpar-pedidos");
   if (!btn) return;
@@ -124,18 +84,3 @@ function configurarLimparPedidos() {
     renderizarPedidos();
   });
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// [ ] Futuro — Integração com Back-end
-// Quando o servidor estiver pronto, o localStorage dá lugar ao fetch().
-// A lógica de exibição permanece igual — só muda a origem dos dados.
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// function renderizarPedidos() {
-//   fetch("https://api.techfood.com/pedidos")
-//     .then(function(res) { return res.json(); })
-//     .then(function(pedidos) {
-//       // mesma lógica de exibição acima
-//     })
-//     .catch(function(err) { console.error("Erro ao buscar pedidos:", err); });
-// }
