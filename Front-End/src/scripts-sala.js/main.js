@@ -1,9 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
-  inicializarSubtotal();
+  renderizarCardapio();
   inicializarHoverCards();
   inicializarVitrine();
 
 });
+
+async function renderizarCardapio() {
+  const grid = document.querySelector("#grid-cardapio")
+  if(!grid) return
+
+  grid.innerHTML = "<p class='loading'>Carregando cardápio...</p>"
+
+  try{
+    const produto = await buscarProdutos()
+
+    grid.innerHTML= ""
+
+    produto.forEach(function(produto){
+      const card = document.createElement("article")
+      card.classList.add("card")
+      card.setAttribute("data-id", produto.id)
+
+      card.innerHTML = "<img src='src/images/" + produto.imagem +"' alt='" + produto.nome + "'>" + "<h3>" + produto.nome + "</h3>" + "<p class='desc'>" + produto.descricao + "</p>" + "<div class='quantidade-box'>" + "<button class='btn-qtd btn-menos'>-</button>" + "<span class='qtd-valor'>1</span>" + "<button class='btn-qtd btn-mais'>+</button>" + "</div>" + "<span class='preco' data-preco='" + produto.preco + "'>" + "R$ " + parseFloat(produto.preco).toFixed(2).replace(".", ",") + "</span>" + "<button class='btn-pedido'>Pedir Agora</button>";
+    
+      grid.appendChild(card)
+    })
+
+
+  }catch(erro){
+    grid.innerHTML = "<p class='loading erro'>Erro ao carregar o cardápio.</p>"
+
+  }
+  
+}
 
 
 function inicializarSubtotal() {
@@ -73,42 +102,11 @@ function inicializarVitrine() {
       event.preventDefault();
 
       const card = clicado.parentElement;
-      const nomePrato = card.querySelector("h3").textContent;
-      const quantidade = Number(card.querySelector(".qtd-valor").textContent);
-      const preco = parseFloat(
-        card.querySelector(".preco").getAttribute("data-preco"),
-      );
-
-      clicado.textContent = "✓ Adicionado!";
-      clicado.style.backgroundColor = "#27ae60";
+      const produtoId = Number(card.getAttribute("data-id"))
+      const quantidade = Number(card.querySelector(".qtd-valor").textContent)
       clicado.disabled = true;
-
-      setTimeout(function () {
-        clicado.textContent = "Pedir Agora";
-        clicado.style.backgroundColor = "";
-        clicado.disabled = false;
-
-        const box = card.querySelector(".quantidade-box");
-        if (box) {
-          const spanQtd = box.querySelector(".qtd-valor");
-          if (spanQtd) spanQtd.textContent = "1";
-          atualizarPrecoCard(box);
-        }
-      }, 1500);
-
-      const badgeExistente = card.querySelector(".badge-adicionado");
-      if (badgeExistente) badgeExistente.remove();
-
-      card.insertAdjacentHTML(
-        "beforeend",
-        "<span class='badge-adicionado'>✔ Pedido salvo</span>",
-      );
-
-      // Remove o badge após 2s — card volta ao estado original
-      setTimeout(function () {
-        const badge = card.querySelector(".badge-adicionado");
-        if (badge) badge.remove();
-      }, 2000);
+      clicado.textContent = "Enviando...";
+      salvarPedido(produtoId, quantidade, clicado);
 
       // Aula 8: salva no localStorage e destaca o botão Meus Pedidos
       salvarPedido({ nome: nomePrato, preco: preco, qtd: quantidade });
@@ -129,12 +127,40 @@ function atualizarPrecoCard(box) {
 }
 
 function salvarPedido(pedido) {
-  const lista = JSON.parse(localStorage.getItem("techfood_pedidos") || "[]");
+  const card = botao.parentElement
+  const nome = querySelector("h3").textContent
+  const preco = parseFloat(card.querySelector(".preco").getAttribute("data-preco"))
+  const subtotal = preco * quantidade
 
-  pedido.subtotal = pedido.preco * pedido.qtd;
-  lista.push(pedido);
+  const lista = JSON.parse(localStorage.getItem("techfood_pedidos") || "[]");
+  lista.push({
+    produto_id: produtoId,
+    quantidade,
+    nome,
+    preco,
+    subtotal
+  });
 
   localStorage.setItem("techfood_pedidos", JSON.stringify(lista));
+
+  clicado.textContent = "✓ Adicionado!";
+      clicado.style.backgroundColor = "#27ae60";
+      clicado.disabled = true;
+
+      atualizarContadorPedidos()
+
+      setTimeout(function () {
+        clicado.textContent = "Pedir Agora";
+        clicado.style.backgroundColor = "";
+        clicado.disabled = false;
+
+        const box = card.querySelector(".quantidade-box");
+        if (box) {
+          const spanQtd = box.querySelector(".qtd-valor");
+          if (spanQtd) spanQtd.textContent = "1";
+          atualizarPrecoCard(box);
+        }
+      }, 1500);
 }
 
 function exibirLinkPedidos() {

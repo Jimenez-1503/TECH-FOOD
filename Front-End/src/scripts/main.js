@@ -145,16 +145,13 @@ function inicializarVitrine() {
       event.preventDefault();
 
       var card = clicado.parentElement;
-
       // ⚠ Aula 9: lê o data-id do card (produto_id do banco)
       // adicionado por renderizarCardapio() — não existe mais data-nome
       var produtoId = Number(card.getAttribute("data-id"));
       var quantidade = Number(card.querySelector(".qtd-valor").textContent);
-
       // Desabilita o botão imediatamente — evita clique duplo enquanto aguarda API
       clicado.disabled = true;
       clicado.textContent = "Enviando...";
-
       // ⚠ Aula 9: passa o botão como parâmetro — o feedback fica dentro
       // de salvarPedido porque agora depende da resposta do servidor
       salvarPedido(produtoId, quantidade, clicado);

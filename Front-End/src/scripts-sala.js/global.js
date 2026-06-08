@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function solicitarNomeCliente() {
-  if(sessionStorage.getItem("techfood_cliente")) return;
+  if (sessionStorage.getItem("techfood_cliente")) return;
 
   const modal = document.querySelector("#modal-boas-vindas");
   if (modal) modal.style.display = "flex";
@@ -17,36 +17,52 @@ function solicitarNomeCliente() {
 
   if (!btnConfirmar || !inputNome) return;
 
-  btnConfirmar.addEventListener("click", function(){
-    const nome = inputNome.value.trim()
+  btnConfirmar.addEventListener("click", function () {
+    const nome = inputNome.value.trim();
 
-    // alertar para não deixar incompleto
-    if(!nome){
-      inputNome.focus()
+    if (!nome) {
+      inputNome.focus();
       return;
     }
-  })
 
-    // salvar o nome
     sessionStorage.setItem("techfood_cliente", nome);
-    modal.style.display = "none";
+    if (modal) modal.style.display = "none";
 
     exibirNomeCliente();
+  });
 
-    inputNome.addEventListener("keydown", function (e) { //é disparado no exato momento em que uma tecla é pressionada no teclado
-      if (e.key === "Enter") btnConfirmar.click();
+  inputNome.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") btnConfirmar.click();
   });
 
   setTimeout(function () {
     inputNome.focus();
   }, 100);
-  
 }
 
 function exibirNomeCliente() {
+  const nome = sessionStorage.getItem("techfood_cliente");
+  const elemento = document.querySelector("#boas-vindas");
+  if (!elemento) return;
 
+  const agora = new Date();
+  const horaExata = agora.getHours() + agora.getMinutes() / 60;
+  
+  let saudacao; 
 
+  if (horaExata >= 5 && horaExata < 12) {
+    saudacao = "☀️ Bom dia";
+  } else if (horaExata >= 12 && horaExata < 18) {
+    saudacao = "🌤️ Boa tarde";
+  } else {
+    saudacao = "🌙 Boa noite";
+  }
 
+  if (nome) {
+    elemento.textContent = `${saudacao}, ${nome}! O que vai pedir hoje?`;
+  } else {
+    elemento.textContent = `${saudacao}! Confira nosso cardápio e faça seu pedido.`;
+  }
 }
 
 function exibirBoasVindas() {
